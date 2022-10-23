@@ -11,19 +11,17 @@ import java.util.Set;
 
 import static org.springframework.data.neo4j.core.schema.Relationship.Direction.INCOMING;
 
-@Node("Movie")
+@Node("Task")
 @Getter
-public class MovieEntity {
+public class TaskEntity {
     @Id
-    private final String title;
-    @Property("tagline")
+    private final String name;
+    @Property
     private final String description;
-    @Relationship(type = "ACTED_IN", direction = INCOMING)
-    private Set<PersonEntity> actors = new HashSet<>();
-    @Relationship(type = "DIRECTED", direction = INCOMING)
-    private Set<PersonEntity> directors = new HashSet<>();
-    public MovieEntity(String title, String description) {
-        this.title = title;
+    @Relationship(type = "DEPENDS_ON", direction = INCOMING)
+    private Set<TaskEntity> dependencies = new HashSet<>();
+    public TaskEntity(String name, String description) {
+        this.name = name;
         this.description = description;
     }
 }
