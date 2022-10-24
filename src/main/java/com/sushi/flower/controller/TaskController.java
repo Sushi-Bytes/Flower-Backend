@@ -1,7 +1,7 @@
 package com.sushi.flower.controller;
 
-import com.sushi.flower.model.TaskEntity;
-import com.sushi.flower.repository.TaskRepository;
+import com.sushi.flower.model.Task;
+import com.sushi.flower.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -12,25 +12,25 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping("/tasks")
 public class TaskController {
-    private final TaskRepository taskRepository;
+    private final TaskService taskService;
 
     @PutMapping
-    Mono<TaskEntity> createOrUpdateTask(@RequestBody TaskEntity newTask) {
-        return taskRepository.save(newTask);
+    Mono<Task> createOrUpdateTask(@RequestBody Task newTask) {
+        return taskService.save(newTask);
     }
 
     @GetMapping(value = { "", "/" }, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    Flux<TaskEntity> getTasks() {
-        return taskRepository.findAll();
+    Flux<Task> getTasks() {
+        return taskService.findAll();
     }
 
-    @GetMapping("/by-task")
-    Mono<TaskEntity> byTask(@RequestParam String name) {
-        return taskRepository.findOneByName(name);
+    @GetMapping("/search-tasks")
+    Flux<Task> byTask(@RequestParam String name) {
+        return taskService.searchByName(name);
     }
 
     @DeleteMapping("{id}")
     Mono<Void> delete(@PathVariable String id) {
-        return taskRepository.deleteById(id);
+        return taskService.deleteById(id);
     }
 }
