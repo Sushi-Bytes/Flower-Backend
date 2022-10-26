@@ -1,5 +1,6 @@
 package com.sushi.flower.controller;
 
+import com.sushi.flower.model.TaskLinkRequest;
 import com.sushi.flower.model.Task;
 import com.sushi.flower.service.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,10 @@ public class TaskController {
     @DeleteMapping("{id}")
     Mono<Void> delete(@PathVariable Long id) {
         return taskService.deleteById(id);
+    }
+
+    @PutMapping("link")
+    Flux<Task> linkTasks(@RequestBody TaskLinkRequest linkRequest) {
+        return taskService.linkTasks(linkRequest);
     }
 }

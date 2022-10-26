@@ -9,4 +9,6 @@ import reactor.core.publisher.Flux;
 public interface TaskRepository extends ReactiveNeo4jRepository<Task, Long> {
     @Query("MATCH (task:Task) WHERE task.name CONTAINS $name RETURN task")
     Flux<Task> searchByName(@Param("name") String name);
+
+
 }

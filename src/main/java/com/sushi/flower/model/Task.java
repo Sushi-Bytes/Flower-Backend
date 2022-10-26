@@ -1,5 +1,6 @@
 package com.sushi.flower.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.data.neo4j.core.schema.*;
 
@@ -10,6 +11,7 @@ import static org.springframework.data.neo4j.core.schema.Relationship.Direction.
 
 @Node("Task")
 @Getter
+@EqualsAndHashCode
 public class Task {
     @Id
     @GeneratedValue
@@ -23,5 +25,9 @@ public class Task {
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public void dependsOn(Task task) {
+        dependencies.add(task);
     }
 }
