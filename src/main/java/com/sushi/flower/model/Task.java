@@ -1,10 +1,7 @@
 package com.sushi.flower.model;
 
 import lombok.Getter;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
-import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +12,9 @@ import static org.springframework.data.neo4j.core.schema.Relationship.Direction.
 @Getter
 public class Task {
     @Id
+    @GeneratedValue
+    private Long id;
+    @Property
     private final String name;
     @Property
     private final String description;

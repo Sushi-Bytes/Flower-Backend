@@ -15,10 +15,6 @@ import reactor.core.publisher.Mono;
 public class TaskService {
     private final TaskRepository taskRepository;
 
-    public Flux<Task> searchTasksByName(String name) {
-        return taskRepository.searchByName(name);
-    }
-
     public Mono<Task> save(Task newTask) {
         return taskRepository.save(newTask);
     }
@@ -31,7 +27,7 @@ public class TaskService {
         return taskRepository.searchByName(name);
     }
 
-    public Mono<Void> deleteById(String id) {
+    public Mono<Void> deleteById(Long id) {
         return taskRepository.deleteById(id);
     }
 }
