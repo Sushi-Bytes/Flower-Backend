@@ -1,23 +1,19 @@
 package com.sushi.flower.service;
 
+import com.sushi.flower.model.TaskLinkRequest;
 import com.sushi.flower.model.Task;
 import com.sushi.flower.repository.TaskRepository;
 import lombok.AllArgsConstructor;
-import org.neo4j.driver.Driver;
-import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
-import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
-
-    public Flux<Task> searchTasksByName(String name) {
-        return taskRepository.searchByName(name);
-    }
 
     public Mono<Task> save(Task newTask) {
         return taskRepository.save(newTask);
@@ -31,7 +27,19 @@ public class TaskService {
         return taskRepository.searchByName(name);
     }
 
-    public Mono<Void> deleteById(String id) {
+    public Mono<Void> deleteById(Long id) {
         return taskRepository.deleteById(id);
+    }
+
+    public Flux<Task> linkTasks(TaskLinkRequest linkRequest) {
+        return taskRepository.findById(linkRequest.getTaskIdFrom())
+                .zipWith(taskRepository.findById(linkRequest.getTaskIdTo()))
+                .flatMap(tasks -> {
+                    Task taskFrom = tasks.getT1();
+                    Task taskTo = tasks.getT2();
+                    taskFrom.dependsOn(taskTo);
+                    return taskRepository.save(taskFrom)
+                            .thenReturn(List.of(taskFrom, taskTo));
+                }).flatMapMany(Flux::fromIterable);
     }
 }
