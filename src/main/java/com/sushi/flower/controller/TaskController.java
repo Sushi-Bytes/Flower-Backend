@@ -39,4 +39,9 @@ public class TaskController {
     Flux<Task> linkTasks(@RequestBody TaskLinkRequest linkRequest) {
         return taskService.linkTasks(linkRequest);
     }
+
+    @DeleteMapping("link")
+    Flux<Task> unlinkTasks(@RequestBody TaskLinkRequest unlinkRequest) {
+        return taskService.unlinkTasks(unlinkRequest);
+    }
 }

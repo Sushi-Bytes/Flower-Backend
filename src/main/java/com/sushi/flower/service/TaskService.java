@@ -32,14 +32,30 @@ public class TaskService {
     }
 
     public Flux<Task> linkTasks(TaskLinkRequest linkRequest) {
-        return taskRepository.findById(linkRequest.getTaskIdFrom())
-                .zipWith(taskRepository.findById(linkRequest.getTaskIdTo()))
+        return taskRepository.findById(linkRequest.getParentTask())
+                .zipWith(taskRepository.findById(linkRequest.getChildTask()))
                 .flatMap(tasks -> {
-                    Task taskFrom = tasks.getT1();
-                    Task taskTo = tasks.getT2();
-                    taskFrom.dependsOn(taskTo);
-                    return taskRepository.save(taskFrom)
-                            .thenReturn(List.of(taskFrom, taskTo));
+                    Task parentTask = tasks.getT1();
+                    Task childTask = tasks.getT2();
+
+                    childTask.dependsOn(parentTask);
+
+                    return taskRepository.save(childTask)
+                            .thenReturn(List.of(parentTask, childTask));
+                }).flatMapMany(Flux::fromIterable);
+    }
+
+    public Flux<Task> unlinkTasks(TaskLinkRequest linkRequest) {
+        return taskRepository.findById(linkRequest.getParentTask())
+                .zipWith(taskRepository.findById(linkRequest.getChildTask()))
+                .flatMap(tasks -> {
+                    Task parentTask = tasks.getT1();
+                    Task childTask = tasks.getT2();
+
+                    childTask.independentFrom(parentTask);
+
+                    return taskRepository.save(childTask)
+                            .thenReturn(List.of(parentTask, childTask));
                 }).flatMapMany(Flux::fromIterable);
     }
 }
