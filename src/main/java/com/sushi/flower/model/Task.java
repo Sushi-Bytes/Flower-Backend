@@ -30,4 +30,8 @@ public class Task {
     public void dependsOn(Task task) {
         dependencies.add(task);
     }
+
+    public void independentFrom(Task task) {
+        dependencies.remove(task);
+    }
 }
