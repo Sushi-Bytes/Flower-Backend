@@ -32,30 +32,30 @@ public class TaskService {
     }
 
     public Flux<Task> linkTasks(TaskLinkRequest linkRequest) {
-        return taskRepository.findById(linkRequest.getParentTask())
-                .zipWith(taskRepository.findById(linkRequest.getChildTask()))
+        return taskRepository.findById(linkRequest.getCurrentTask())
+                .zipWith(taskRepository.findById(linkRequest.getNextTask()))
                 .flatMap(tasks -> {
-                    Task parentTask = tasks.getT1();
-                    Task childTask = tasks.getT2();
+                    Task currentTask = tasks.getT1();
+                    Task nextTask = tasks.getT2();
 
-                    childTask.dependsOn(parentTask);
+                    currentTask.addNextTask(nextTask);
 
-                    return taskRepository.save(childTask)
-                            .thenReturn(List.of(parentTask, childTask));
+                    return taskRepository.save(currentTask)
+                            .thenReturn(List.of(currentTask, nextTask));
                 }).flatMapMany(Flux::fromIterable);
     }
 
     public Flux<Task> unlinkTasks(TaskLinkRequest linkRequest) {
-        return taskRepository.findById(linkRequest.getParentTask())
-                .zipWith(taskRepository.findById(linkRequest.getChildTask()))
+        return taskRepository.findById(linkRequest.getCurrentTask())
+                .zipWith(taskRepository.findById(linkRequest.getNextTask()))
                 .flatMap(tasks -> {
-                    Task parentTask = tasks.getT1();
-                    Task childTask = tasks.getT2();
+                    Task currentTask = tasks.getT1();
+                    Task nextTask = tasks.getT2();
 
-                    childTask.independentFrom(parentTask);
+                    currentTask.removeNextTask(nextTask);
 
-                    return taskRepository.save(childTask)
-                            .thenReturn(List.of(parentTask, childTask));
+                    return taskRepository.save(currentTask)
+                            .thenReturn(List.of(currentTask, nextTask));
                 }).flatMapMany(Flux::fromIterable);
     }
 }

@@ -43,7 +43,7 @@ class TaskServiceTest {
                 tx.run(""
                         + "CREATE (task1:Task {name:'Test', description: 'Test Description', status: 0})\n"
                         + "CREATE (task2:Task {name:'Test 2', description: 'Test Description 2', status: 0})\n"
-                        + "CREATE (task1)-[:DEPENDS_ON]->(task2)");
+                        + "CREATE (task1)-[:NEXT_TASK]->(task2)");
                 return null;
             });
         }
